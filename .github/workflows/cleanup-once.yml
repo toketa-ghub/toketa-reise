@@ -1,0 +1,21 @@
+name: Einmalig alte Releases entfernen
+
+on:
+  push:
+    paths: ['.github/cleanup-once']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Alte Releases und Tags löschen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for t in v1.0.3 v1.0.4 v1.0.5 v1.0.6 v1.0.7 pc-v1.0.1 pc-v1.0.2 pc-v1.0.3 pc-v1.0.4; do
+            gh release delete "$t" --repo "$GITHUB_REPOSITORY" --cleanup-tag --yes || echo "übersprungen: $t"
+          done
