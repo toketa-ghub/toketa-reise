@@ -61,7 +61,15 @@ jobs:
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
-          ./gradlew assembleRelease --no-daemon --stacktrace
+          set +e
+          ./gradlew assembleRelease --no-daemon --stacktrace > "$RUNNER_TEMP/gradle.log" 2>&1
+          code=$?
+          cat "$RUNNER_TEMP/gradle.log"
+          if [ $code -ne 0 ]; then
+            msg=$(grep -E -B2 -A12 "FAILURE|What went wrong|error:|Error" "$RUNNER_TEMP/gradle.log" | head -60 | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::error title=Gradle-Fehler::$msg"
+          fi
+          exit $code
 
       - name: APK bereitlegen
         run: |
