@@ -1,0 +1,12 @@
+Fremdkomponenten von Toketa Reise / Third-party components
+
+Jede Komponente steht unter ihrer eigenen Lizenz. Die vollständigen Lizenztexte liegen den jeweiligen Paketen bei
+(node_modules/<Paket>/LICENSE) und in den fertigen Programmen.
+
+- Firebase JS SDK (Google) – Apache-2.0
+- Capacitor und Plugins (Ionic) – MIT
+- Electron – MIT
+- electron-builder – MIT
+- Vite – MIT
+- Poppins (Indian Type Foundry), eingebunden über @fontsource/poppins – SIL Open Font License 1.1
+- Noto/System-Schriften für japanische Zeichen werden vom Gerät bereitgestellt und nicht mitgeliefert.

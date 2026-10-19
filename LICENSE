@@ -1,0 +1,55 @@
+Toketa Reise – Lizenz / License
+Copyright (c) 2026 Toketa (GitHub: toketa-ghub). Alle Rechte vorbehalten. / All rights reserved.
+
+DEUTSCH
+
+Der Quellcode ist zur Ansicht öffentlich, aber nicht frei. Es gilt:
+
+1. Erlaubt (ohne Nachfrage)
+   a) Die fertige App (Android, Windows) kostenlos für private, nicht kommerzielle Zwecke zu nutzen.
+   b) Den Quellcode zu lesen, um ihn zu verstehen oder daraus zu lernen.
+   c) Das Repository im Rahmen der GitHub-Nutzungsbedingungen zu forken, ausschließlich um Änderungsvorschläge an
+      dieses Projekt zu senden. Der Fork darf nicht veröffentlicht oder als eigenes Produkt verbreitet werden.
+
+2. Nur mit vorheriger schriftlicher Erlaubnis des Rechteinhabers
+   a) Code, Texte, Grafiken oder Teile davon zu kopieren, zu verändern, weiterzugeben, zu veröffentlichen oder in
+      andere Projekte zu übernehmen, auch in abgewandelter Form.
+   b) Die App oder Teile davon kommerziell zu nutzen, zu verkaufen, zu vermieten oder als Dienst anzubieten.
+   c) Eigene Versionen oder Nachbauanwendungen auf Grundlage dieses Codes zu veröffentlichen.
+   d) Urheberrechts- und Lizenzhinweise zu entfernen.
+   Eine Erlaubnis kann an Bedingungen geknüpft werden, zum Beispiel an einen sichtbaren Hinweis auf das Projekt
+   „Toketa Reise" mit Link. Anfragen an: alex@toketa.de
+
+3. Name und Logo
+   Der Name „Toketa", „Toketa Reise" sowie das Logo (Stapel-Symbol) und das Erscheinungsbild sind nicht
+   mitlizenziert. Sie dürfen nicht für eigene oder fremde Produkte verwendet werden, auch nicht in ähnlicher Form,
+   wenn dadurch der Eindruck einer Verbindung entstehen kann.
+
+4. Beiträge
+   Wer Änderungsvorschläge einreicht, räumt dem Rechteinhaber ein unwiderrufliches, unbefristetes, kostenloses
+   Recht ein, den Beitrag beliebig zu nutzen, zu verändern und zu lizenzieren, auch kommerziell.
+
+5. Spätere Versionen
+   Diese Bedingungen gelten für die Version, mit der sie ausgeliefert werden. Für spätere Versionen können andere
+   Bedingungen gelten, auch kostenpflichtige. Bereits erhaltene Versionen bleiben unter den dort beigelegten
+   Bedingungen nutzbar.
+
+6. Fremdkomponenten
+   Die App verwendet Software und Schriften Dritter (zum Beispiel Firebase, Capacitor, Electron, Vite, Poppins).
+   Für sie gelten ihre eigenen Lizenzen, siehe THIRD-PARTY-NOTICES.txt. Diese Lizenz erweitert oder beschränkt
+   sie nicht.
+
+7. Haftung
+   Die Software wird ohne jede Gewährleistung bereitgestellt, so wie sie ist. Die Haftung ist, soweit gesetzlich
+   zulässig, ausgeschlossen, außer bei Vorsatz und grober Fahrlässigkeit sowie bei Verletzung von Leben,
+   Körper und Gesundheit. Es gilt deutsches Recht.
+
+ENGLISH (short version)
+
+The source code is published for viewing only; it is not open source. You may use the finished apps free of charge
+for private, non-commercial purposes, read the code, and fork on GitHub solely to propose changes to this project.
+Any copying, modification, redistribution, derivative or competing versions, commercial use, or removal of notices
+requires prior written permission (alex@toketa.de), which may be conditioned on visible attribution with a link to
+the project. The names "Toketa" and "Toketa Reise" and the logo are not licensed. Contributions grant the owner an
+irrevocable, perpetual, royalty-free license. Later versions may carry different terms. Third-party components keep
+their own licenses. Provided "as is", without warranty; German law applies.
