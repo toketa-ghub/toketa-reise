@@ -1,0 +1,53 @@
+name: PC-Programm bauen (Windows)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: desktop-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Windows-Installer bauen
+        shell: bash
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: |
+          set +e
+          npx electron-builder --win --x64 --publish never > build.log 2>&1
+          code=$?
+          cat build.log
+          if [ $code -ne 0 ]; then
+            msg=$(tail -40 build.log | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::error title=Desktop-Fehler::$msg"
+          fi
+          exit $code
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Toketa-Reise-Windows
+          path: release/Toketa-Reise-Setup.exe
+          retention-days: 30
+      - name: Als Release veröffentlichen (direkter Download)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: pc-v1.0.${{ github.run_number }}
+          name: Toketa Reise PC 1.0.${{ github.run_number }}
+          body: Windows-Programm. Toketa-Reise-Setup.exe herunterladen und ausführen, die Installation dauert wenige Sekunden.
+          files: release/Toketa-Reise-Setup.exe
+          make_latest: false

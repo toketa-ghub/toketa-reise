@@ -3,3 +3,4 @@ dist/
 *.keystore
 *.jks
 .DS_Store
+release/
