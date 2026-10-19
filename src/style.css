@@ -361,3 +361,6 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:var(--sat);ba
 #updBar .ut{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25;font-size:14px}
 #updBar .ut span{color:var(--muted);font-size:13px}
 #updBtn.hot{border-color:var(--ac);color:var(--ac)}
+#updBar .pbar{margin-top:8px;height:6px;border-radius:3px;background:var(--surface2);overflow:hidden}
+#updBar .pbar i{display:block;height:100%;background:var(--ac);transition:width .15s}
+#updBar{flex-wrap:wrap}
