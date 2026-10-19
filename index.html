@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0B0B12">
+<title>Toketa Reise</title>
+<link rel="icon" type="image/svg+xml" href="./logo/app-icon.svg">
+<link rel="apple-touch-icon" href="./logo/app-icon_512.png">
+<link rel="manifest" href="./manifest.webmanifest">
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="brandrow">
+      <img class="mark" src="./logo/symbol.svg" alt="" width="40" height="40">
+      <div class="brandtxt"><span class="wm">TOKETA</span><span class="tg">REISEPLANER</span></div>
+      <span class="grow"></span>
+      <select id="tripSel" aria-label="Reise wählen"></select>
+      <button class="theme" id="themeBtn" type="button" aria-label="Hell oder Dunkel umschalten" title="Hell / Dunkel">◐</button>
+    </div>
+    <div class="hero-main">
+      <div class="hero-l">
+        <div class="kicker" id="heroKick"></div>
+        <h1 id="heroTitle">Toketa Reise</h1>
+        <div class="chips" id="heroChips"></div>
+      </div>
+      <div class="sun" id="sun" aria-live="polite"></div>
+    </div>
+  </div>
+</header>
+<nav class="tabs" id="tabs" aria-label="Bereiche"><div class="wrap">
+  <button data-tab="plan" type="button"><span class="k">旅</span>Reiseplan</button>
+  <button data-tab="check" type="button"><span class="k">備</span>Checkliste</button>
+  <button data-tab="wish" type="button"><span class="k">願</span>Todos &amp; Wünsche</button>
+  <button data-tab="budget" type="button"><span class="k">円</span>Budget</button>
+  <button data-tab="info" type="button"><span class="k">知</span>Infos</button>
+  <button data-tab="notes" type="button"><span class="k">記</span>Notizen</button>
+</div></nav>
+<main><div class="wrap" id="view"></div></main>
+<footer class="app"><div class="wrap">
+  <span id="sync" class="st"></span>
+  <button class="btn sm" id="tripEditBtn" type="button" data-act="tripedit">Reise bearbeiten</button>
+  <button class="btn sm" id="expBtn" type="button">Sicherung speichern</button>
+  <button class="btn sm" id="impBtn" type="button">Sicherung laden</button>
+  <button class="btn sm" id="loginBtn" type="button">Anmelden</button>
+  <input type="file" id="impFile" accept=".json,application/json" hidden>
+</div></footer>
+<div id="modal" hidden></div>
+<div id="toast" role="status"></div>
+<div id="login" hidden>
+  <div class="lcard">
+    <div class="lg"><img src="./logo/app-icon.svg" alt="" width="52" height="52"><div class="brandtxt"><span class="wm" style="color:var(--ink)">TOKETA</span><span class="tg" style="color:var(--muted)">REISEPLANER</span></div></div>
+    <h2>Anmelden</h2>
+    <p>Mit deinem Konto werden deine Reisen auf allen Geräten abgeglichen.</p>
+    <form id="lform" autocomplete="on">
+      <input type="email" id="lmail" placeholder="E-Mail" autocomplete="username" aria-label="E-Mail" inputmode="email">
+      <input type="password" id="lpw" placeholder="Passwort" autocomplete="current-password" aria-label="Passwort">
+      <div class="msg" id="lmsg" role="status"></div>
+      <button class="btn primary" id="lgo" type="submit">Anmelden</button>
+      <div class="row2"><button class="lnk" id="lreset" type="button">Passwort vergessen?</button><span style="flex:1"></span><button class="lnk" id="lskip" type="button">Ohne Anmeldung nutzen</button></div>
+    </form>
+  </div>
+</div>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

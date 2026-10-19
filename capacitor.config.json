@@ -1,0 +1,12 @@
+{
+  "appId": "de.toketa.reise",
+  "appName": "Toketa Reise",
+  "webDir": "dist",
+  "backgroundColor": "#0B0B12",
+  "android": {
+    "backgroundColor": "#0B0B12"
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

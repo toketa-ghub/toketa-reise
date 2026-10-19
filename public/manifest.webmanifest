@@ -1,0 +1,13 @@
+{
+  "name": "Toketa Reise",
+  "short_name": "Toketa Reise",
+  "description": "Reiseplaner im Toketa-Design",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0B0B12",
+  "theme_color": "#0B0B12",
+  "icons": [
+    {"src": "logo/app-icon_512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "logo/app-icon_1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any"}
+  ]
+}

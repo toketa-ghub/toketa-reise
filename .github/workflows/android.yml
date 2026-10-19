@@ -1,0 +1,85 @@
+name: Android-App bauen
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write   # nötig, um die fertige APK als Release anzuhängen
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Abhängigkeiten installieren
+        run: npm ci
+
+      - name: Web-App bauen
+        run: npm run build
+
+      - name: In das Android-Projekt übernehmen
+        run: npx cap sync android
+
+      - name: Signatur-Schlüssel bereitstellen
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/toketa.keystore"
+            echo "KEYSTORE_FILE=$RUNNER_TEMP/toketa.keystore" >> "$GITHUB_ENV"
+            echo "Schlüssel gefunden, die APK wird mit deinem Schlüssel signiert."
+          else
+            echo "::warning::Kein Schlüssel hinterlegt. Die APK wird mit einem Test-Schlüssel signiert und kann später nicht über eine richtig signierte Version drüberinstalliert werden."
+          fi
+
+      - name: APK bauen
+        working-directory: android
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+          VERSION_NAME: 1.0.${{ github.run_number }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: APK bereitlegen
+        run: |
+          mkdir -p out
+          cp android/app/build/outputs/apk/release/*.apk out/Toketa-Reise.apk
+          ls -la out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Toketa-Reise-APK
+          path: out/Toketa-Reise.apk
+          retention-days: 30
+
+      - name: Als Release veröffentlichen (direkter Download)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: Toketa Reise 1.0.${{ github.run_number }}
+          body: Android-App (APK). Zum Installieren auf dem Handy die Datei Toketa-Reise.apk herunterladen und öffnen.
+          files: out/Toketa-Reise.apk
+          make_latest: true
