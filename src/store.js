@@ -26,6 +26,7 @@ const COLOR_MAP = { red: 'blue', gold: 'lav', sky: 'mid', indigo: 'ink', green: 
 export function migrate(s, opts) {
   opts = opts || {};
   if (!s || !s.days || !s.check) throw new Error('Datei ist keine Reise-Sicherung');
+  const legacy = !(s.trip && s.trip.name); // alte Sicherung aus der ersten Version: Farbnamen übersetzen
   s.trip = s.trip || {};
   const dayKeys = Object.keys(s.days).sort();
   if (!s.trip.start) s.trip.start = dayKeys[0];
@@ -39,7 +40,8 @@ export function migrate(s, opts) {
   s.infos.forEach((i) => { if (!i.id) i.id = uid(); i.items = i.items || []; });
   if (s.infoNote == null) s.infoNote = opts.infoNote || '';
   s.places = s.places || {};
-  Object.keys(s.places).forEach((p) => { s.places[p] = COLOR_MAP[s.places[p]] || 'gray'; });
+  const OK = ['blue', 'mid', 'lav', 'ink', 'slate', 'gray', 'red', 'orange', 'yellow', 'green', 'teal', 'cyan', 'pink', 'purple', 'brown'];
+  Object.keys(s.places).forEach((p) => { const c = s.places[p]; s.places[p] = legacy ? (COLOR_MAP[c] || 'gray') : (OK.includes(c) ? c : 'gray'); });
   s.stays = s.stays || []; s.todos = s.todos || []; s.notes = s.notes || [];
   s.budget = s.budget || { limit: 0, rate: 1, fixed: [], spent: [] };
   s.budget.fixed = s.budget.fixed || []; s.budget.spent = s.budget.spent || [];

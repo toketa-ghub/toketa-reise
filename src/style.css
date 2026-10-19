@@ -5,7 +5,7 @@
   --bg:#F4F6FB; --surface:#FFFFFF; --surface2:#E8ECF6; --ink:#0B0B12; --muted:#3F4A63; --line:#C9D0DE;
   --ac:#2457FF; --ac-deep:#1A44D6; --ac-soft:#E4EAFF; --on-ac:#FFFFFF; --ac2:#B9A6FF;
   --ok:#1B8A4B; --warn:#B26A00; --bad:#C62828;
-  --pc-blue:#2457FF; --pc-mid:#6E7FFF; --pc-lav:#B9A6FF; --pc-ink:#0B0B12; --pc-slate:#3F4A63; --pc-gray:#C9D0DE;
+  --pc-blue:#2457FF; --pc-mid:#6E7FFF; --pc-lav:#B9A6FF; --pc-ink:#0B0B12; --pc-slate:#3F4A63; --pc-gray:#C9D0DE; --pc-red:#E5484D; --pc-orange:#F08A24; --pc-yellow:#E5B800; --pc-green:#2FA866; --pc-teal:#14A3A3; --pc-cyan:#1FA2E0; --pc-pink:#E5569B; --pc-purple:#8E4EC6; --pc-brown:#9A6B43;
   --hero:#0B0B12; --hero-ink:#E8ECF6;
   --f:'Poppins','Noto Sans JP','Hiragino Sans','Yu Gothic','Meiryo',system-ui,sans-serif;
   --f-body:'Poppins','Noto Sans JP','Hiragino Sans','Yu Gothic','Meiryo',system-ui,sans-serif;
@@ -16,12 +16,12 @@
   --bg:#0B0B12; --surface:#171826; --surface2:#22243A; --ink:#E8ECF6; --muted:#A9B2C9; --line:#33364F;
   --ac:#6E7FFF; --ac-deep:#8A97FF; --ac-soft:#1F2250; --on-ac:#0B0B12; --ac2:#B9A6FF;
   --ok:#5BD58E; --warn:#F0B35A; --bad:#FF7B7B;
-  --pc-blue:#4A6CFF; --pc-ink:#E8ECF6; --pc-slate:#A9B2C9; --pc-gray:#6B7391; color-scheme:dark}}
+  --pc-blue:#4A6CFF; --pc-ink:#E8ECF6; --pc-slate:#A9B2C9; --pc-gray:#6B7391; --pc-red:#FF6B70; --pc-orange:#FFA24A; --pc-yellow:#F2C94C; --pc-green:#4CC884; --pc-teal:#33C3C3; --pc-cyan:#4DB8F0; --pc-pink:#FF7AB5; --pc-purple:#B07AE8; --pc-brown:#C48F66; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0B0B12; --surface:#171826; --surface2:#22243A; --ink:#E8ECF6; --muted:#A9B2C9; --line:#33364F;
   --ac:#6E7FFF; --ac-deep:#8A97FF; --ac-soft:#1F2250; --on-ac:#0B0B12; --ac2:#B9A6FF;
   --ok:#5BD58E; --warn:#F0B35A; --bad:#FF7B7B;
-  --pc-blue:#4A6CFF; --pc-ink:#E8ECF6; --pc-slate:#A9B2C9; --pc-gray:#6B7391; color-scheme:dark}
+  --pc-blue:#4A6CFF; --pc-ink:#E8ECF6; --pc-slate:#A9B2C9; --pc-gray:#6B7391; --pc-red:#FF6B70; --pc-orange:#FFA24A; --pc-yellow:#F2C94C; --pc-green:#4CC884; --pc-teal:#33C3C3; --pc-cyan:#4DB8F0; --pc-pink:#FF7AB5; --pc-purple:#B07AE8; --pc-brown:#C48F66; color-scheme:dark}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14.5px;line-height:1.5;margin:0;-webkit-text-size-adjust:100%}
@@ -58,9 +58,9 @@ h1,h2,h3,h4{font-family:var(--f);margin:0;text-wrap:balance;font-weight:700}
 .chip-btn{background:rgba(255,255,255,.08);border:1px solid rgba(232,236,246,.35);color:var(--hero-ink);border-radius:8px;padding:5px 11px;font-size:13px}
 .chip-btn:hover{background:rgba(255,255,255,.18)}
 .chip-btn b{font-variant-numeric:tabular-nums}
-.sun{flex:none;width:128px;height:128px;border-radius:50%;background:var(--surface2);color:#0B0B12;display:grid;place-content:center;text-align:center;box-shadow:0 0 0 6px rgba(185,166,255,.45)}
+.sun{flex:none;width:128px;height:128px;border-radius:50%;background:var(--surface2);color:var(--ink);display:grid;place-content:center;text-align:center;box-shadow:0 0 0 6px rgba(185,166,255,.45)}
 .sun b{font-family:var(--f);font-size:46px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums}
-.sun small{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;margin-top:4px;font-weight:600;color:#3F4A63;padding-inline:8px}
+.sun small{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;margin-top:4px;font-weight:600;color:var(--ink);opacity:.9;padding-inline:8px}
 /* Reiter */
 .tabs{position:sticky;top:var(--sat);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
 .tabs .wrap{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}

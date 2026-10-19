@@ -11,7 +11,7 @@ const TYPES={transfer:['駅','Transfer'],stay:['宿','Unterkunft'],sight:['景',
 const IDEA_CATS=['sight','food','night','shop','culture','nature','other'];
 const BEFORE_CATS={buy:['買','Kaufen'],do:['済','Erledigen'],plan:['調','Recherchieren']};
 const PHASES={prep:['備','Vorbereitung'],pack:['荷','Packliste'],site:['地','Unterwegs & vor Ort']};
-const COLORS=[['blue','Elektroblau'],['mid','Mittelblau'],['lav','Lavendel'],['ink','Schwarz'],['slate','Schiefer'],['gray','Grau']];
+const COLORS=[['blue','Elektroblau'],['mid','Mittelblau'],['lav','Lavendel'],['ink','Schwarz'],['slate','Schiefer'],['gray','Grau'],['red','Rot'],['orange','Orange'],['yellow','Gelb'],['green','Grün'],['teal','Türkis'],['cyan','Himmelblau'],['pink','Pink'],['purple','Violett'],['brown','Braun']];
 const WD=['So','Mo','Di','Mi','Do','Fr','Sa'],WDL=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
 const MON=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
 const MONL=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
