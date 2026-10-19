@@ -2,6 +2,7 @@
 import { loadStore, saveStore, loadUi, saveUi as saveUiStore, uid, addDays, migrate, newTripState } from './store.js';
 import { initSync, pushTrip, removeTrip, login as fbLogin, logout as fbLogout, resetPassword, authMessage } from './sync.js';
 import { isNative, openExternal, saveTextFile, setupNative } from './native.js';
+import { initUpdates } from './update.js';
 import { JAPAN_V1 } from './data/japan-v1.js';
 
 /* ---------- Grunddaten ---------- */
@@ -712,6 +713,7 @@ if(!['plan','check','wish','budget','info','notes'].includes(ui.tab))ui.tab='pla
 applyTheme();
 render();setSync('local');
 setupNative({onBack});
+initUpdates(toast);
 try{
   initSync({
     onUser(u){sync.user=u;sync.ready=true;if(u){hideLogin();setSync('saving')}else if(!ui.skipLogin)showLogin();setSync();render()},

@@ -24,6 +24,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+        env:
+          APP_BUILD: ${{ github.run_number }}
       - name: Windows-Installer bauen
         shell: bash
         env:
