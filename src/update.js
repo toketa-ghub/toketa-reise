@@ -33,7 +33,7 @@ export async function checkUpdate() {
 
 let bar;
 function paint(html) { bar.innerHTML = html; }
-function showBar(u) {
+export function showUpdate(u) {
   if (!bar) { bar = document.createElement('div'); bar.id = 'updBar'; document.body.appendChild(bar); }
   const mb = u.size ? ' · ' + (u.size / 1048576).toFixed(0) + ' MB' : '';
   paint('<div class="ut"><b>Update verfügbar</b><span>Version ' + u.name + mb + '</span></div>' +
@@ -44,7 +44,7 @@ function showBar(u) {
     if (a.dataset.u === 'go') startUpdate(u);
     else bar.classList.remove('on');
   };
-  const b = document.querySelector('#updBtn'); if (b) b.classList.add('hot');
+  const b = document.querySelector('#menuBtn'); if (b) b.classList.add('hot');
 }
 function progress(u, pct, text) {
   paint('<div class="ut"><b>' + text + '</b><div class="pbar"><i style="width:' + pct + '%"></i></div></div>');
@@ -80,7 +80,7 @@ async function startUpdate(u) {
           '<button class="btn sm primary" type="button" data-u="perm">Einstellung öffnen</button><button class="btn sm" type="button" data-u="later">Abbrechen</button>');
         bar.onclick = async e => {
           const a = e.target.closest('[data-u]'); if (!a) return;
-          if (a.dataset.u === 'perm') { await Inst.openSettings(); showBar(u); } else bar.classList.remove('on');
+          if (a.dataset.u === 'perm') { await Inst.openSettings(); showUpdate(u); } else bar.classList.remove('on');
         };
         return;
       }
@@ -94,7 +94,7 @@ async function startUpdate(u) {
       if (u.size) { const st = await Filesystem.stat({ path: 'Toketa-Reise-Update.apk', directory: Directory.Cache }); if (st.size !== u.size) throw new Error('Datei unvollständig'); }
       progress(u, 100, 'Installation startet … bitte bestätigen');
       await Inst.install({ path: res.path });
-      setTimeout(() => showBar(u), 4000);
+      setTimeout(() => showUpdate(u), 4000);
     }
   } catch (e) {
     fail(u, String((e && e.message) || e).slice(0, 90));
@@ -102,10 +102,11 @@ async function startUpdate(u) {
 }
 
 /* manual=true: Ergebnis immer melden. Sonst nur still prüfen und bei Neuem das Banner zeigen. */
-export async function runCheck(manual, toast) {
+export async function runCheck(manual, toast, onInfo) {
   try {
     const u = await checkUpdate();
-    if (u.status === 'new') { showBar(u); if (manual) toast('Neue Version ' + u.name + ' ist da'); return u; }
+    if (onInfo) onInfo(u);
+    if (u.status === 'new') { showUpdate(u); if (manual) toast('Neue Version ' + u.name + ' ist da'); return u; }
     if (manual) toast(u.status === 'web' ? 'Im Browser immer aktuell' : 'Du hast die neueste Version (' + versionText() + ')');
     return u;
   } catch (e) {
@@ -114,8 +115,6 @@ export async function runCheck(manual, toast) {
   }
 }
 
-export function initUpdates(toast) {
-  const b = document.querySelector('#updBtn');
-  if (b) { b.textContent = 'Nach Updates suchen · ' + versionText(); b.onclick = () => runCheck(true, toast); if (platform() === 'web') b.hidden = true; }
-  if (platform() !== 'web') setTimeout(() => runCheck(false, toast), 2500);
+export function initUpdates(toast, auto, onInfo) {
+  if (platform() !== 'web') setTimeout(() => { if (!auto || auto()) runCheck(false, toast, onInfo); }, 2500);
 }

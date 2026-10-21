@@ -2,7 +2,7 @@
 import { loadStore, saveStore, loadUi, saveUi as saveUiStore, uid, addDays, migrate, newTripState } from './store.js';
 import { initSync, pushTrip, removeTrip, login as fbLogin, logout as fbLogout, resetPassword, authMessage } from './sync.js';
 import { isNative, openExternal, saveTextFile, setupNative } from './native.js';
-import { initUpdates } from './update.js';
+import { initUpdates, runCheck, versionText, platform } from './update.js';
 import { JAPAN_V1 } from './data/japan-v1.js';
 
 /* ---------- Grunddaten ---------- */
@@ -39,7 +39,7 @@ const SYM=()=>(state&&state.budget&&state.budget.sym)||'';
 /* ---------- Speicher: lokal immer, zusätzlich Firestore wenn angemeldet ---------- */
 let store=loadStore();
 let state=null;
-let ui=Object.assign({tab:'plan',sel:null,phase:'all',onlyOpen:false,wish:'japan',wcat:'all',wplace:'all',bcat:'all',skipLogin:false,theme:''},loadUi());
+let ui=Object.assign({tab:'plan',sel:null,phase:'all',onlyOpen:false,wish:'japan',wcat:'all',wplace:'all',bcat:'all',skipLogin:false,theme:'',design:'toketa',autoUpd:true},loadUi());
 let sync={user:null,status:'local',err:'',ready:false};
 const timers={},pending={},deferred={};
 const cur=()=>store.trips[store.active];
@@ -67,7 +67,6 @@ function setSync(m,err){
   else if(sync.status==='err'){dot='err';txt='Synchronisierung fehlgeschlagen'+(sync.err?' ('+sync.err+')':'')+'. Alles ist lokal gespeichert.'}
   else{dot='ok';txt='Synchronisiert · '+esc(sync.user.email)}
   el.innerHTML='<span class="dot '+dot+'"></span>'+txt;
-  const lb=$('#loginBtn');if(lb){lb.textContent=sync.user?'Abmelden':'Anmelden'}
 }
 const modalOpen=()=>!!$('#modal').innerHTML;
 function adoptRemote(id,d){
@@ -218,7 +217,7 @@ function vPlan(){return '<div class="plan"><aside class="side">'+calHTML()+stays
 function groupHTML(g){
   const n=g.items.length,dn=g.items.filter(i=>i.done).length;
   const items=g.items.filter(i=>!ui.onlyOpen||!i.done);
-  return '<article class="card grp"><header><div class="stamp sm">'+PHASES[g.phase][0]+'</div><h3>'+esc(g.name)+'</h3><span class="cnt">'+dn+'/'+n+'</span><button type="button" class="ib" data-act="gedit" data-g="'+g.id+'" aria-label="Kategorie bearbeiten">✎</button></header>'+
+  return '<article class="card grp"><header><div class="stamp sm">'+PHASES[g.phase][0]+'</div><h3>'+esc(g.name)+'</h3><span class="cnt">'+dn+'/'+n+'</span><button type="button" class="ib" data-act="gup" data-g="'+g.id+'" aria-label="Kategorie nach oben" title="Nach oben">↑</button><button type="button" class="ib" data-act="gdown" data-g="'+g.id+'" aria-label="Kategorie nach unten" title="Nach unten">↓</button><button type="button" class="ib" data-act="gedit" data-g="'+g.id+'" aria-label="Kategorie bearbeiten">✎</button></header>'+
     '<div class="bar"><i style="width:'+(n?dn/n*100:0)+'%"></i></div><ul>'+
     (items.length?items.map(i=>{const dc=dueClass(i.due,i.done);
       return '<li class="ci'+(i.done?' done':'')+'"><button type="button" class="chk'+(i.done?' on':'')+'" data-act="ctoggle" data-g="'+g.id+'" data-i="'+i.id+'" aria-label="Erledigt umschalten"></button>'+
@@ -314,7 +313,7 @@ function vBudget(){
 
 /* ---------- Infos & Notizen ---------- */
 function vInfo(){
-  const card=i=>'<article class="card info"><h3><span class="stamp sm">'+esc(i.k||'記')+'</span><span style="flex:1;min-width:0">'+esc(i.title)+'</span><button type="button" class="ib" data-act="infoedit" data-id="'+i.id+'" aria-label="Bearbeiten">✎</button></h3><ul>'+i.items.map(x=>'<li>'+linkify(x)+'</li>').join('')+'</ul></article>';
+  const card=i=>'<article class="card info"><h3><span class="stamp sm">'+esc(i.k||'記')+'</span><span style="flex:1;min-width:0">'+esc(i.title)+'</span><button type="button" class="ib" data-act="infoup" data-id="'+i.id+'" aria-label="Nach vorne" title="Nach vorne">↑</button><button type="button" class="ib" data-act="infodown" data-id="'+i.id+'" aria-label="Nach hinten" title="Nach hinten">↓</button><button type="button" class="ib" data-act="infoedit" data-id="'+i.id+'" aria-label="Bearbeiten">✎</button></h3><ul>'+i.items.map(x=>'<li>'+linkify(x)+'</li>').join('')+'</ul></article>';
   return '<div class="toolbar"><button class="btn primary" type="button" data-act="infonew">Neuer Hinweis</button><span class="sub">Eigene Infos zur Reise: Zeit, Geld, Strom, Notfallnummern …</span></div>'+
     (state.infos.length?'<div class="info-grid">'+state.infos.map(card).join('')+'</div>'+(state.infoNote?'<p class="sub" style="margin-top:6px">'+esc(state.infoNote)+'</p>':''):'<div class="empty"><div class="big">知</div>Noch keine Hinweise. Sammle hier, was du unterwegs schnell nachschlagen willst.</div>');
 }
@@ -331,7 +330,6 @@ function vWelcome(){
 function render(){
   renderTripBar();renderHero();
   $('#tabs').hidden=!state;
-  const tb=$('#tripEditBtn');if(tb)tb.hidden=!state;
   if(!state){$('#view').innerHTML=vWelcome();setSync();return}
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===ui.tab));
   const fn={plan:vPlan,check:vCheck,wish:vWish,budget:vBudget,info:vInfo,notes:vNotes}[ui.tab]||vPlan;
@@ -506,6 +504,19 @@ document.addEventListener('click',ev=>{
     case'tripedit':editTrip(true);break;
     case'infonew':editInfo(null);break;
     case'infoedit':editInfo(id);break;
+    case'infoup':case'infodown':moveIn(state.infos,x=>x.id===id,a==='infoup'?-1:1);break;
+    case'gup':case'gdown':moveIn(state.check,x=>x.id===el.dataset.g,a==='gup'?-1:1,g=>ui.phase==='all'||g.phase===ui.phase);break;
+    case'menu':openMenu();break;
+    case'm-theme':ui.theme=el.dataset.v;saveUi();applyTheme();openMenu();break;
+    case'm-design':if(!el.disabled){ui.design=el.dataset.v;saveUi();openMenu()}break;
+    case'm-login':menuLogin(el);break;
+    case'm-tripedit':closeModal();editTrip(true);break;
+    case'm-tripnew':closeModal();editTrip(false);break;
+    case'm-export':closeModal();doExport();break;
+    case'm-import':closeModal();$('#impFile').click();break;
+    case'm-upd':menuCheckUpdate(el);break;
+    case'm-auto':ui.autoUpd=!ui.autoUpd;saveUi();openMenu();break;
+    case'm-repo':openExternal('https://github.com/toketa-ghub/toketa-reise');break;
     case'welcome-import':$('#impFile').click();break;
     case'selday':ui.sel=d;saveUi();render();if(innerWidth<=1040)document.getElementById('daycard').scrollIntoView({behavior:'smooth',block:'start'});break;
     case'gotoplan':ui.tab='plan';ui.sel=d;saveUi();render();window.scrollTo({top:0});break;
@@ -642,14 +653,69 @@ function editInfo(id){
     }});
 }
 
+
+/* Reihenfolge ändern: tauscht mit dem sichtbaren Nachbarn (Filter beachten) */
+function moveIn(list,match,dir,visible){
+  const i=list.findIndex(match);if(i<0)return;
+  let j=i+dir;
+  while(j>=0&&j<list.length&&visible&&!visible(list[j]))j+=dir;
+  if(j<0||j>=list.length){toast(dir<0?'Schon ganz oben':'Schon ganz unten');return}
+  const t=list[i];list[i]=list[j];list[j]=t;commit();
+}
+
+/* ---------- Menü ---------- */
+const DESIGNS=[['toketa','Toketa','Elektroblau, Lavendel und Nachtschwarz']];
+let updInfo=null;
+function openMenu(){
+  const dark=document.documentElement.dataset.theme==='dark'||(!ui.theme&&matchMedia('(prefers-color-scheme: dark)').matches);
+  const th=(v,l)=>'<button type="button" class="'+(ui.theme===v?'on':'')+'" data-act="m-theme" data-v="'+v+'">'+l+'</button>';
+  const web=platform()==='web';
+  const row=(act,t,s,extra)=>'<button type="button" class="mrow" data-act="'+act+'"'+(extra||'')+'><span><b>'+t+'</b>'+(s?'<small>'+s+'</small>':'')+'</span><i>›</i></button>';
+  const html='<div class="menu">'+
+    '<section><h4>Aussehen</h4>'+
+      '<div class="designs">'+DESIGNS.map(d=>'<button type="button" class="dz'+(ui.design===d[0]?' on':'')+'" data-act="m-design" data-v="'+d[0]+'"><span class="sw"><i style="background:#2457FF"></i><i style="background:#B9A6FF"></i><i style="background:#0B0B12"></i></span><b>'+d[1]+'</b><small>'+d[2]+'</small></button>').join('')+
+      '<div class="dz soon"><span class="sw"><i></i><i></i><i></i></span><b>Weitere Designs</b><small>Folgen in späteren Versionen</small></div></div>'+
+      '<div class="seg" role="group" aria-label="Helligkeit">'+th('','Automatisch')+th('light','Hell')+th('dark','Dunkel')+'</div></section>'+
+    '<section><h4>Reise</h4>'+
+      (state?row('m-tripedit','Reise bearbeiten',esc(TRIP.name||'')):'')+
+      row('m-tripnew','Neue Reise anlegen','')+
+      (state?row('m-export','Sicherung speichern','Alle Daten dieser Reise als Datei'):'')+
+      row('m-import','Sicherung laden','Reise aus einer Datei wiederherstellen')+'</section>'+
+    '<section><h4>Konto und Abgleich</h4>'+
+      '<div class="mnote">'+(sync.user?'Angemeldet als <b>'+esc(sync.user.email)+'</b>. Deine Reisen werden auf allen Geräten abgeglichen.':'Nicht angemeldet. Deine Reisen liegen nur auf diesem Gerät.')+'</div>'+
+      row('m-login',sync.user?'Abmelden':'Anmelden',sync.user?'Die Reisen bleiben auf diesem Gerät':'Für den Abgleich zwischen Handy und PC')+'</section>'+
+    (web?'':'<section><h4>Updates</h4>'+
+      '<div class="mnote" id="updNote">Installiert: Version <b>'+esc(versionText())+'</b>'+(updInfo&&updInfo.status==='new'?' · <b class="hotx">Update '+esc(updInfo.name)+' verfügbar</b>':'')+'</div>'+
+      row('m-upd',updInfo&&updInfo.status==='new'?'Update '+esc(updInfo.name)+' installieren':'Nach Updates suchen','')+
+      '<label class="mrow tog" data-act="m-auto"><span><b>Beim Start automatisch suchen</b><small>Zeigt dir unten ein Banner, wenn es etwas Neues gibt</small></span><span class="sw2'+(ui.autoUpd?' on':'')+'"></span></label></section>')+
+    '<section><h4>Über Toketa Reise</h4>'+
+      '<div class="mnote">Version '+esc(versionText())+' · Quellcode zur Ansicht, Nutzung privat und kostenlos. Weitergabe nur mit Erlaubnis.</div>'+
+      row('m-repo','Projektseite öffnen','github.com/toketa-ghub/toketa-reise')+'</section></div>';
+  const m=$('#modal');const had=!m.hidden&&m.querySelector('.menu');
+  const sc=had?m.querySelector('.sheet').scrollTop:0;
+  openSheet('Menü',html,false);
+  if(had)m.querySelector('.sheet').scrollTop=sc;
+}
+async function menuLogin(el){
+  if(!sync.user){closeModal();ui.skipLogin=false;saveUi();showLogin();return}
+  if(el.classList.contains('arm')){try{await fbLogout();closeModal();toast('Abgemeldet. Die Reisen bleiben auf diesem Gerät.')}catch(x){toast('Abmelden fehlgeschlagen')}}
+  else{el.classList.add('arm');el.querySelector('b').textContent='Wirklich abmelden?';setTimeout(()=>{if(el.isConnected){el.classList.remove('arm');el.querySelector('b').textContent='Abmelden'}},4000)}
+}
+async function menuCheckUpdate(el){
+  if(updInfo&&updInfo.status==='new'){closeModal();showUpdate(updInfo);return}
+  el.querySelector('b').textContent='Suche …';
+  const u=await runCheck(true,toast,x=>{updInfo=x});
+  if(u)updInfo=u;
+  if(u&&u.status==='new')closeModal();else openMenu();
+}
+
 /* ---------- Sicherung, Anmeldung, Theme, Start ---------- */
 async function saveFile(name,text){
   try{await saveTextFile(name,text)}catch(e){toast('Speichern nicht möglich')}
 }
-$('#expBtn').addEventListener('click',()=>{if(!state){toast('Es gibt noch keine Reise');return}
+function doExport(){if(!state){toast('Es gibt noch keine Reise');return}
   const nm=(TRIP.name||'reise').toLowerCase().replace(/[^a-z0-9äöüß]+/g,'-').replace(/^-|-$/g,'');
-  saveFile('toketa-reise-'+nm+'-'+TODAY+'.json',JSON.stringify(state,null,1))});
-$('#impBtn').addEventListener('click',()=>$('#impFile').click());
+  saveFile('toketa-reise-'+nm+'-'+TODAY+'.json',JSON.stringify(state,null,1))}
 $('#impFile').addEventListener('change',e=>{
   const f=e.target.files[0];if(!f)return;const r=new FileReader();
   r.onload=()=>{try{
@@ -670,10 +736,7 @@ function applyTheme(){
   const dark=ui.theme?ui.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
   const m=document.querySelector('meta[name=color-scheme]');if(m)m.content=dark?'dark light':'light dark';
 }
-$('#themeBtn').addEventListener('click',()=>{
-  const dark=ui.theme?ui.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
-  ui.theme=dark?'light':'dark';saveUi();applyTheme();
-});
+$('#menuBtn').addEventListener('click',openMenu);
 
 /* Anmeldung */
 function showLogin(msg){$('#login').hidden=false;const m=$('#lmsg');m.className='msg';m.textContent=msg||''}
@@ -692,13 +755,6 @@ $('#lreset').addEventListener('click',async()=>{
   try{await resetPassword(email);m.className='msg ok';m.textContent='Wenn es dieses Konto gibt, ist eine Mail zum Zurücksetzen unterwegs.'}catch(e){m.className='msg';m.textContent=authMessage(e)}
 });
 $('#lskip').addEventListener('click',()=>{ui.skipLogin=true;saveUi();hideLogin();render()});
-$('#loginBtn').addEventListener('click',async e=>{
-  const b=e.currentTarget;
-  if(!sync.user){ui.skipLogin=false;saveUi();showLogin();return}
-  if(b.classList.contains('arm')){b.classList.remove('arm');try{await fbLogout();toast('Abgemeldet. Die Reisen bleiben auf diesem Gerät.')}catch(x){toast('Abmelden fehlgeschlagen')}}
-  else{b.classList.add('arm');b.textContent='Wirklich abmelden?';setTimeout(()=>{b.classList.remove('arm');setSync()},4000)}
-});
-
 function onBack(){
   if(modalOpen()){closeModal();return true}
   if(!$('#login').hidden)return false;
@@ -713,7 +769,7 @@ if(!['plan','check','wish','budget','info','notes'].includes(ui.tab))ui.tab='pla
 applyTheme();
 render();setSync('local');
 setupNative({onBack});
-initUpdates(toast);
+initUpdates(toast,()=>ui.autoUpd!==false,u=>{updInfo=u});
 try{
   initSync({
     onUser(u){sync.user=u;sync.ready=true;if(u){hideLogin();setSync('saving')}else if(!ui.skipLogin)showLogin();setSync();render()},
